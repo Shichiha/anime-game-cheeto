@@ -20,8 +20,10 @@ namespace cheat::feature
 		NF(f_minMultiplier,		"Min Multiplier",		"RapidFire", 1),
 		NF(f_maxMultiplier,		"Max Multiplier",		"RapidFire", 3),
 		NF(f_MultiTarget,		"Multi-target",			"RapidFire", false),
-		NF(f_MultiTargetRadius, "Multi-target Radius",	"RapidFire", 20.0f)
-    {
+		NF(f_MultiTargetRadius, "Multi-target Radius",	"RapidFire", 20.0f),
+		NF(f_checkDistance,		"Check Distance",		"RapidFire", false),
+		NF(f_distanceToCheck,	"Distance Check",		"RapidFire", 7.0f)
+	{
 		HookManager::install(app::LCBaseCombat_DoHitEntity, LCBaseCombat_DoHitEntity_Hook);
     }
 
@@ -76,6 +78,10 @@ namespace cheat::feature
 	
 		ImGui::Indent();
 		ConfigWidget("Radius (m)", f_MultiTargetRadius, 0.1f, 5.0f, 50.0f, "Radius to check for valid targets.");
+		ConfigWidget("", f_checkDistance);
+		ImGui::SameLine();
+		ConfigWidget("Check Distance", f_distanceToCheck, 0.1, 0.1f, 50.0f, "Radius with the avatar as the center point. Enemies within this radius will not be attacked. \n" \
+		"This way, Attack targets are away from initial target, and will save you some FPS.");
 		ImGui::Unindent();
     }
 
@@ -212,6 +218,9 @@ namespace cheat::feature
 					continue;
 
 				if (distance > rapidFire.f_MultiTargetRadius)
+					continue;
+				
+				if (rapidFire.f_checkDistance && distance < rapidFire.f_distanceToCheck)
 					continue;
 
 				validEntities.push_back(entity);
