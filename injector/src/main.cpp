@@ -69,11 +69,15 @@ HANDLE OpenGenshinProcess()
     PROCESS_INFORMATION processInformation{};
 
     auto filePath = util::GetOrSelectPath(ini, "Inject", "GenshinPath", "genshin path", "Executable\0GenshinImpact.exe;YuanShen.exe\0");
+    auto commandline = ini.GetValue("Inject", "GenshinCommandLine");
+
+    LPSTR lpstr = commandline == nullptr ? nullptr : const_cast<LPSTR>(commandline);
+
     if (!filePath)
         return NULL;
 
     BOOL result = CreateProcessA(filePath->c_str(),
-        nullptr, 0, 0, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &startInfo, &processInformation);
+        lpstr, 0, 0, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &startInfo, &processInformation);
     if (result == FALSE) 
     {
         LOG_LAST_ERROR("Failed to create game process.");
